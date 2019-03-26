@@ -11,8 +11,8 @@ public class Stone {
         this.yyPos = yyPos;
     }
 
-    public void draw(double scaling) {
+    public void draw(double scaling, double radius) {
         StdDraw.setPenColor(color);
-        StdDraw.circle(this.xxPos * scaling, this.yyPos * scaling, 100);
+        StdDraw.circle(this.xxPos * scaling, this.yyPos * scaling, radius);
     }
 }
