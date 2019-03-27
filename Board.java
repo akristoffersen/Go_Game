@@ -2,12 +2,14 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class Board {
-    HashMap<Integer, Stone> stones;
-    int size;
+    private HashMap<Integer, Stone> stones;
+    private int size;
+    private double scaling;
 
-    public Board(int N) {
+    public Board(int N, double scale) {
         stones = new HashMap<>(N * N);
         size = N;
+        scaling = scale;
     }
 
     /**
@@ -18,10 +20,30 @@ public class Board {
      */
     public boolean AddStone(Color color, int row, int col) {
         int index = rcConvert(row, col);
-        if (legalMove(color, index)) {
+        if (!legalMove(color, index)) {
             return false;
         }
         stones.put(rcConvert(row, col), new Stone(color, col, row));
+        return true;
+    }
+
+    public boolean mouseClick(Color color) {
+        if (!StdDraw.isMousePressed()) {
+            return false;
+        }
+        double dBetween = scaling / (double) size;
+        double x = StdDraw.mouseX() / dBetween;
+        double y = StdDraw.mouseY() / dBetween;
+
+        // convert to row i, column j
+        int i = (int) Math.round(y);
+        int j = (int) Math.round(x);
+        System.out.println("(" + j + ", " + i + ")");
+
+        if (!AddStone(color, i, j)) {
+            System.out.println("Illegal Move. Try again");
+            return false;
+        }
         return true;
     }
 
@@ -40,27 +62,21 @@ public class Board {
         return row * size + col;
     }
 
-    /**
-     * @param scaling width of board
-     * (0, 0) is at the bottom left corner.
-     */
-    public void draw(double scaling) {
-        double dBetween = scaling / size;
+    public void draw() {
+        double dBetween = scaling / (double) size;
         int start = 0;
         StdDraw.setPenColor(Color.BLACK);
         StdDraw.setPenRadius(0.0025);
 
         //making the board
         for (int i = 0; i < size; i++) {
-            StdDraw.line(start, 0, start, scaling);
-            StdDraw.line(0, start, scaling, start);
+            StdDraw.line(start, 0, start, scaling - dBetween);
+            StdDraw.line(0, start, scaling - dBetween, start);
             start += dBetween;
         }
         //drawing the stones
         for (Stone s : stones.values()) {
-            s.draw(scaling, dBetween * 0.4);
+            s.draw(dBetween, dBetween * 0.4);
         }
     }
-
-
 }
