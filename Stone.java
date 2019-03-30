@@ -6,7 +6,7 @@ public class Stone {
     private int i;
     private int j;
     //private int liberties = 4;
-    private ArrayList<Stone> neighbors = new ArrayList<>();
+    private ArrayList<Stone> neighbors;
 
     public Stone(Color color, int xxPos, int yyPos) {
         this(color, xxPos, yyPos, null);
