@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Board {
@@ -23,15 +25,56 @@ public class Board {
         if (!legalMove(color, index)) {
             return false;
         }
-        stones.put(rcConvert(row, col), new Stone(color, col, row));
+        //counting liberties
+        ArrayList<Stone> neighbors = findLiberties(row, col);
+        Stone adding = new Stone(color, col, row, neighbors);
+
+        for (Stone s : neighbors) {
+            s.addNeighbor(s);
+        }
+
+        stones.put(index, adding);
         return true;
+    }
+
+    private ArrayList findLiberties(int row, int col) {
+        //checking down
+        ArrayList<Stone> neighbors = new ArrayList<>();
+        ArrayList<Integer> nIndexes = new ArrayList<>();
+
+        //checking down
+        if (row > 0) {
+            nIndexes.add(rcConvert(row - 1, col));
+        }
+        //checking up
+        if (row < size - 1) {
+            nIndexes.add(rcConvert(row + 1, col));
+        }
+        //checking left
+        if (col > 0) {
+            nIndexes.add(rcConvert(row, col - 1));
+        }
+        //checking right
+
+        //checking left
+        if (col < size - 1) {
+            nIndexes.add(rcConvert(row, col + 1));
+        }
+
+        for (int index : nIndexes) {
+            if (stones.containsKey(index)) {
+                neighbors.add(stones.get(index));
+            }
+        }
+
+        return neighbors;
     }
 
     public boolean mouseClick(Color color) {
         if (!StdDraw.isMousePressed()) {
             return false;
         }
-        double dBetween = scaling / (double) size;
+        double dBetween = scaling / ((double) size);
         double x = StdDraw.mouseX() / dBetween;
         double y = StdDraw.mouseY() / dBetween;
 
@@ -52,6 +95,7 @@ public class Board {
         if (stones.containsKey(index)) {
             return false;
         }
+        //if its addition causes a
         return true; //not correct, placeholder until I create deeper logic.
     }
 
@@ -63,7 +107,7 @@ public class Board {
     }
 
     public void draw() {
-        double dBetween = scaling / (double) size;
+        double dBetween = scaling / ((double) size);
         int start = 0;
         StdDraw.setPenColor(Color.BLACK);
         StdDraw.setPenRadius(0.0025);
